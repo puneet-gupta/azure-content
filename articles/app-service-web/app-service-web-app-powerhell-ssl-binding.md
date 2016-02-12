@@ -31,6 +31,16 @@ Knowing the resource group name that contains the web app, the web app name, the
 
     New-AzureRmWebAppSSLBinding -ResourceGroupName myresourcegroup -WebAppName mytestapp -CertificateFilePath PathToPfxFile -CertificatePassword PlainTextPwd -Name www.contoso.com
 
+Note: Before adding a SSL binding to a WebApp, you must have a host name (custom domain) already configured. If the host name is not configured , then you will get an error 'hostname' does not exist while running  New-AzureRmWebAppSSLBinding. You can add a hostname directly from the portal or using Azure Powershell. The following PowerShell snippet can be to configure the hostname before running New-AzureRmWebAppSSLBinding. 
+
+    $webApp = Get-AzureRmWebApp -Name mytestapp -ResourceGroupName myresourcegroup
+    $hostNames = $webApp.HostNames
+    $HostNames.Add("www.contoso.com")
+    Set-AzureRmWebApp -Name mytestapp -ResourceGroupName myresourcegroup -HostNames $HostNames 
+
+It is important to understand that the Set-AzureRmWebApp cmdlet overwrites the hostnames for a WebApp. Hence the above powershell snippet is appeneding to the existing list of the host names for the WebApp.
+
+
 ## Uploading and Binding an existing SSL certificate ##
 
 Scenario: The user would like to bind a previously uploaded SSL certificate to one of his web apps.
